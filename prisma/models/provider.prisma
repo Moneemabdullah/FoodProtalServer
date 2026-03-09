@@ -1,0 +1,18 @@
+model ProviderProfile {
+    id             String   @id @default(uuid())
+    ownerId        String
+    restaurantName String
+    description    String?
+    rating         Float    @default(0)
+    createdAt      DateTime @default(now())
+    updatedAt      DateTime @updatedAt
+
+    owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+    location   Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+    locationId String?   @unique
+
+    meals Meal[]
+
+    @@index([ownerId])
+    @@index([restaurantName])
+}

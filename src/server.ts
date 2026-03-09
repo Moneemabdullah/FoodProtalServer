@@ -1,13 +1,25 @@
 import config from "./config/index.js";
 import app from "./index.js";
 import http, { Server } from "node:http";
+import prisma from "./lib/prisma.js";
 let server: Server | null = null;
+
+async function connectToDB() {
+    try {
+        await prisma.$connect();
+        console.log("*** DB connection successfull!!");
+    } catch (error) {
+        console.log("*** DB connection failed!");
+        process.exit(1);
+    }
+}
 
 async function startServer() {
     try {
+        await connectToDB();
         server = http.createServer(app);
         server.listen(process.env.PORT, () => {
-            console.log(`🚀 Server is running on port ${process.env.PORT}`);
+            console.log(`🚀 Server is running on port ${config.port}`);
         });
 
         handleProcessEvents();
@@ -30,6 +42,7 @@ async function gracefulShutdown(signal: string) {
 
             try {
                 console.log("Server shutdown complete.");
+                await prisma.$disconnect();
             } catch (error) {
                 console.error("❌ Error during shutdown:", error);
             }

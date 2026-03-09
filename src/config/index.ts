@@ -9,6 +9,7 @@ const config = {
     dbUrl: process.env.DATABASE_URL as string,
     OriginUrl: process.env.ORIGIN_URL as string,
     BaseUrl: process.env.BASE_URL as string,
+    port: process.env.PORT as string,
 };
 
 export default config;

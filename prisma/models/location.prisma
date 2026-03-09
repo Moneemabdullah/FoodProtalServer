@@ -1,0 +1,11 @@
+model Location {
+    id       String  @id @default(uuid())
+    village  String?
+    thana    String
+    district String
+
+    providerProfile ProviderProfile?
+
+    @@index([district])
+    @@index([thana])
+}

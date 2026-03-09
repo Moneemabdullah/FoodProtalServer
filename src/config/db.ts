@@ -1,13 +1,18 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import pg from "pg";
+import config from "./index.js";
 
-export const prisma = new PrismaClient();
+const { Pool } = pg;
 
-export async function connectToDatabase() {
-    try {
-        await prisma.$connect();
-        console.log("Connected to the database successfully.");
-    } catch (error) {
-        console.error("Error connecting to the database:", error);
-        process.exit(1); // Exit the process with an error code
-    }
-}
+const pool = new Pool({
+    connectionString: config.dbUrl,
+});
+
+const adapter = new PrismaPg(pool);
+
+export const prisma = new PrismaClient({
+    adapter,
+});
+
+export default prisma;

@@ -2,15 +2,13 @@ import express from "express";
 import compression from "compression";
 import config from "./config/index.js";
 import cors from "cors";
-import { connect } from "node:http2";
-import { connectToDatabase } from "./config/db.js";
 
 const app = express();
 
+// Middleware
+app.use(cors());
 app.use(express.json());
 app.use(compression());
-
-await connectToDatabase();
 
 app.use(
     cors({
