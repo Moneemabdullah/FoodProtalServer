@@ -2,6 +2,8 @@ import express from "express";
 import compression from "compression";
 import config from "./config/index.js";
 import cors from "cors";
+import { auth } from "./lib/auth.js";
+import { toNodeHandler } from "better-auth/node";
 
 const app = express();
 
@@ -16,6 +18,8 @@ app.use(
         credentials: true,
     }),
 );
+
+app.all("/api/auth/*splat", toNodeHandler(auth));
 
 // Default route for testing
 app.get("/", (_req, res) => {

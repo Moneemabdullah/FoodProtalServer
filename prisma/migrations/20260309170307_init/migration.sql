@@ -80,6 +80,7 @@ CREATE TABLE "ProviderProfile" (
     "rating" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
+    "isApproved" BOOLEAN NOT NULL DEFAULT false,
     "locationId" TEXT,
 
     CONSTRAINT "ProviderProfile_pkey" PRIMARY KEY ("id")

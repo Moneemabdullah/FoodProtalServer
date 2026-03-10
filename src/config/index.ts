@@ -10,6 +10,12 @@ const config = {
     OriginUrl: process.env.ORIGIN_URL as string,
     BaseUrl: process.env.BASE_URL as string,
     port: process.env.PORT as string,
+    GoogleClientId: process.env.GOOGLE_CLIENT_ID as string,
+    GoogleClientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    AppHost: process.env.APP_HOST as string,
+    AppPort: process.env.APP_PORT as string,
+    AppUser: process.env.APP_USER as string,
+    AppPassword: process.env.APP_PASSWORD as string,
 };
 
 export default config;
