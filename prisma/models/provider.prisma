@@ -1,12 +1,12 @@
 model ProviderProfile {
-  id             String   @id @default(uuid())
+  id             String                  @id @default(uuid())
   ownerId        String
   restaurantName String
   description    String?
-  rating         Float    @default(0)
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  isApproved     Boolean  @default(false)
+  ratings        providerProfileRating[]
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+  isApproved     Boolean                 @default(false)
 
   owner      User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   location   Location? @relation(fields: [locationId], references: [id], onDelete: SetNull)
@@ -16,4 +16,18 @@ model ProviderProfile {
 
   @@index([ownerId])
   @@index([restaurantName])
+}
+
+model providerProfileRating {
+  id         String   @id @default(uuid())
+  providerId String
+  userId     String
+  rating     Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  providerProfile ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, userId])
 }

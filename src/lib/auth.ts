@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import nodemailer from "nodemailer";
-import config from "../config/index.js";
+import config from "../config/index";
 import prisma from "./prisma";
 
 // Looking to send emails in production? Check out our Email API/SMTP product!

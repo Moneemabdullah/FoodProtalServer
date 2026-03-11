@@ -1,4 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
+import { auth as betterAuth } from "../lib/auth";
 
 export enum Role {
     CUSTOMER = "CUSTOMER",
@@ -22,21 +23,46 @@ declare global {
 }
 
 export const auth = (...roles: Role[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
-        if (!req.user) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized",
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const session = await betterAuth.api.getSession({
+                headers: req.headers as Request["headers"],
             });
-        }
 
-        if (roles.length > 0 && !roles.includes(req.user.role)) {
-            return res.status(403).json({
-                success: false,
-                message: "Forbidden",
-            });
-        }
+            if (!session) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Unauthorized",
+                });
+            }
+            if (!session.user.emailVerified) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Email not verified",
+                });
+            }
 
-        next();
+            req.user = {
+                id: session.user.id,
+                email: session.user.email,
+                role: session.user.role as Role,
+                name: session.user.name,
+                emailVerified: session.user.emailVerified,
+            };
+
+            if (
+                roles.length > 0 &&
+                !roles.includes(session.user.role as Role)
+            ) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Forbidden",
+                });
+            }
+
+            next();
+        } catch (err) {
+            next(err);
+        }
     };
 };
