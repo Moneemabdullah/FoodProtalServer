@@ -1,6 +1,6 @@
+import http, { Server } from "node:http";
 import config from "./config/index.js";
 import app from "./index.js";
-import http, { Server } from "node:http";
 import prisma from "./lib/prisma.js";
 let server: Server | null = null;
 
@@ -18,7 +18,7 @@ async function startServer() {
     try {
         await connectToDB();
         server = http.createServer(app);
-        server.listen(process.env.PORT, () => {
+        server.listen(config.port, () => {
             console.log(`🚀 Server is running on port ${config.port}`);
         });
 

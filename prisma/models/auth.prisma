@@ -1,9 +1,11 @@
 model Verification {
-    id         String    @id @default(uuid())
-    identifier String
-    value      String
-    expiresAt  DateTime
-    createdAt  DateTime?
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-    @@unique([identifier, value])
+  @@index([identifier])
+  @@map("verification")
 }

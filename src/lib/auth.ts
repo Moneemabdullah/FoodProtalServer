@@ -1,13 +1,13 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import config from "../config/index.js";
-import prisma from "./prisma.js";
 import nodemailer from "nodemailer";
+import config from "../config/index.js";
+import prisma from "./prisma";
 
-const transporter = nodemailer.createTransport({
+// Looking to send emails in production? Check out our Email API/SMTP product!
+const transport = nodemailer.createTransport({
     host: config.AppHost,
-    port: parseInt(config.AppPort),
-    secure: false,
+    port: Number(config.AppPort),
     auth: {
         user: config.AppUser,
         pass: config.AppPassword,
@@ -18,10 +18,24 @@ export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
+    trustedOrigins: [config.OriginUrl!],
+    user: {
+        additionalFields: {
+            role: {
+                type: "string",
+                defaultValue: "CUSTOMER",
+                required: false,
+            },
+            phone: {
+                type: "string",
+                required: false,
+            },
+        },
+    },
     emailAndPassword: {
         enabled: true,
         autoSignIn: false,
-        requireEmailVerification: false,
+        // requireEmailVerification: false,
     },
     emailVerification: {
         sendOnSignUp: true,
@@ -29,55 +43,62 @@ export const auth = betterAuth({
         sendVerificationEmail: async ({ user, url, token }, request) => {
             try {
                 const verificationUrl = `${process.env.APP_URL}/verify-email?token=${token}`;
-                const info = await transporter.sendMail({
-                    from: '"Prisma Blog" <prismablog@ph.com>',
+                const info = await transport.sendMail({
+                    from: '"Food Portal" <no-reply@foodportal.com>',
                     to: user.email,
-                    subject: "Please verify your email!",
+                    subject: "Verify Your Food Portal Account!",
                     html: `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Email Verification</title>
+  <title>Verify Your Email</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background-color: #f4f6f8;
-      font-family: Arial, Helvetica, sans-serif;
+      background-color: #fff8f0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #333333;
     }
 
     .container {
       max-width: 600px;
       margin: 40px auto;
       background-color: #ffffff;
-      border-radius: 8px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      border-top: 6px solid #ff6b3c;
     }
 
     .header {
-      background-color: #0f172a;
-      color: #ffffff;
-      padding: 20px;
       text-align: center;
+      padding: 30px 20px;
+      background-color: #ff6b3c;
+      color: #ffffff;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 22px;
+      font-size: 26px;
+      font-weight: bold;
     }
 
     .content {
-      padding: 30px;
-      color: #334155;
+      padding: 30px 25px;
       line-height: 1.6;
+      color: #555555;
     }
 
     .content h2 {
       margin-top: 0;
-      font-size: 20px;
-      color: #0f172a;
+      font-size: 22px;
+      color: #ff6b3c;
+    }
+
+    .content p {
+      margin: 15px 0;
     }
 
     .button-wrapper {
@@ -86,86 +107,71 @@ export const auth = betterAuth({
     }
 
     .verify-button {
-      background-color: #2563eb;
+      background-color: #ff6b3c;
       color: #ffffff !important;
-      padding: 14px 28px;
+      padding: 16px 32px;
       text-decoration: none;
       font-weight: bold;
-      border-radius: 6px;
+      border-radius: 8px;
       display: inline-block;
+      font-size: 16px;
+      transition: background-color 0.2s ease;
     }
 
     .verify-button:hover {
-      background-color: #1d4ed8;
+      background-color: #e65a2b;
     }
 
     .footer {
-      background-color: #f1f5f9;
-      padding: 20px;
       text-align: center;
+      padding: 20px;
       font-size: 13px;
-      color: #64748b;
+      color: #999999;
+      background-color: #fff8f0;
     }
 
     .link {
       word-break: break-all;
       font-size: 13px;
-      color: #2563eb;
+      color: #ff6b3c;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container { margin: 20px; }
+      .content { padding: 20px; }
+      .verify-button { width: 100%; padding: 14px; font-size: 16px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- Header -->
     <div class="header">
-      <h1>Prisma Blog</h1>
+      <h1>Food Portal</h1>
     </div>
 
-    <!-- Content -->
     <div class="content">
-      <h2>Verify Your Email Address</h2>
-      <p>
-        Hello ${user.name} <br /><br />
-        Thank you for registering on <strong>Prisma Blog</strong>.
-        Please confirm your email address to activate your account.
-      </p>
+      <h2>Hello ${user.name},</h2>
+      <p>Welcome to <strong>Food Portal</strong>! 🍔🍕🥗</p>
+      <p>Please verify your email to start ordering your favorite meals.</p>
 
       <div class="button-wrapper">
-        <a href="${verificationUrl}" class="verify-button">
-          Verify Email
-        </a>
+        <a href="${verificationUrl}" class="verify-button">Verify My Email</a>
       </div>
 
-      <p>
-        If the button doesn’t work, copy and paste the link below into your browser:
-      </p>
+      <p>If the button doesn't work, copy and paste this link into your browser:</p>
+      <p class="link">${verificationUrl}</p>
 
-      <p class="link">
-        ${url}
-      </p>
-
-      <p>
-        This verification link will expire soon for security reasons.
-        If you did not create an account, you can safely ignore this email.
-      </p>
-
-      <p>
-        Regards, <br />
-        <strong>Prisma Blog Team</strong>
-      </p>
+      <p>Enjoy a delicious experience with Food Portal!</p>
+      <p>Cheers, <br/><strong>The Food Portal Team</strong></p>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
-      © 2025 Prisma Blog. All rights reserved.
+      © 2026 Food Portal. All rights reserved.
     </div>
   </div>
 </body>
-</html>
-`,
+</html>`,
                 });
-
-                console.log("Message sent:", info.messageId);
             } catch (err) {
                 console.error(err);
                 throw err;
@@ -180,7 +186,6 @@ export const auth = betterAuth({
             clientSecret: config.GoogleClientSecret,
         },
     },
-    trustedOrigins: [config.OriginUrl],
 });
 
 export type Auth = typeof auth;

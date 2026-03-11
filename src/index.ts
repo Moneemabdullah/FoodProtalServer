@@ -1,16 +1,21 @@
-import express from "express";
-import compression from "compression";
-import config from "./config/index.js";
-import cors from "cors";
-import { auth } from "./lib/auth.js";
 import { toNodeHandler } from "better-auth/node";
+import compression from "compression";
+import cors from "cors";
+import express from "express";
+import config from "./config/index.js";
+import { auth } from "./lib/auth.js";
+import { notFound } from "./middlewares/notFound.js";
 
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(compression());
+
+app.use((req, res, next) => {
+    console.log("Request Origin:", req.headers.origin);
+    next();
+});
 
 app.use(
     cors({
@@ -26,12 +31,6 @@ app.get("/", (_req, res) => {
     res.send("API is running");
 });
 
-// 404 Handler
-app.use((req, res, next) => {
-    res.status(404).json({
-        success: false,
-        message: "Route Not Found",
-    });
-});
+app.use(notFound);
 
 export default app;

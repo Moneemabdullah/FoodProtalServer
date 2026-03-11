@@ -1,23 +1,23 @@
 model Meal {
-    id          String  @id @default(uuid())
-    title       String
-    description String?
-    price       Decimal @db.Decimal(10, 2)
-    image       String?
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  price       Decimal @db.Decimal(10, 2)
+  image       String?
 
-    categoryId String
-    providerId String
+  categoryId String
+  providerId String
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-    category Category        @relation(fields: [categoryId], references: [id])
-    provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category Category        @relation(fields: [categoryId], references: [id])
+  provider ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-    orderItems OrderItem[]
-    reviews    Review[]
+  orderItems OrderItem[]
+  reviews    Review[]
 
-    @@index([categoryId])
-    @@index([providerId])
-    @@index([title])
+  @@index([categoryId])
+  @@index([providerId])
+  @@index([title])
 }
