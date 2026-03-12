@@ -7,6 +7,12 @@ import { auth } from "./lib/auth";
 import { notFound } from "./middlewares/notFound";
 import providerProfileRoutes from "./modules/ProviderProfile/ProviderProfile.Routes";
 import userRoutes from "./modules/User/user.routes";
+import mealRoutes from "./modules/Meal/meal.routes";
+import categoryRoutes from "./modules/Category/category.routes";
+import locationRoutes from "./modules/Location/location.routes";
+import orderRoutes from "./modules/Order/order.routes";
+import orderItemRoutes from "./modules/OrderItem/orderItem.routes";
+import reviewRoutes from "./modules/Review/review.routes";
 
 const app = express();
 
@@ -14,10 +20,11 @@ const app = express();
 app.use(express.json());
 app.use(compression());
 
-app.use((req, res, next) => {
-    console.log("Request Origin:", req.headers.origin);
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log("Request Origin:", req.headers.origin);
+//     console.log("Request Cookies:", req.headers.cookie);
+//     next();
+// });
 
 app.use(
     cors({
@@ -29,6 +36,12 @@ app.use(
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/provider-profiles", providerProfileRoutes);
+app.use("/api/v1/meals", mealRoutes);
+app.use("/api/v1/categories", categoryRoutes);
+app.use("/api/v1/locations", locationRoutes);
+app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/order-items", orderItemRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
 
 // Default route for testing
 app.get("/", (_req, res) => {
