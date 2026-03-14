@@ -59,6 +59,32 @@ const getAllOrders = async (params?: GetAllOrdersParams) => {
     return orders;
 };
 
+const getOrdersByProvider = async (providerId: string) => {
+    const orders = await prisma.order.findMany({
+        where: {
+            orderItems: {
+                some: {
+                    meal: {
+                        providerId,
+                    },
+                },
+            },
+        },
+        include: {
+            user: true,
+            orderItems: {
+                include: {
+                    meal: true,
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+    return orders;
+};
+
 const getOrderById = async (id: Order["id"]) => {
     const order = await prisma.order.findUnique({
         where: { id },
@@ -104,4 +130,5 @@ export default {
     updateOrder,
     deleteOrder,
     updateOrderStatus,
+    getOrdersByProvider,
 };

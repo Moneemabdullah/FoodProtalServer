@@ -32,11 +32,11 @@ const getAllOrders = async (req: Request, res: Response) => {
     try {
         const userId = req.query.userId as string | undefined;
         const status = req.query.status as OrderStatus | undefined;
-        
+
         const queryParams: { userId?: string; status?: OrderStatus } = {};
         if (userId) queryParams.userId = userId;
         if (status) queryParams.status = status;
-        
+
         const orders = await orderService.getAllOrders(queryParams);
 
         return res.status(200).json({
@@ -167,6 +167,31 @@ const updateOrderStatus = async (req: Request, res: Response) => {
     }
 };
 
+const getOrdersByProvider = async (req: Request, res: Response) => {
+    try {
+        const { providerId } = req.params;
+        if (!providerId || Array.isArray(providerId)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid provider id",
+            });
+        }
+
+        const orders = await orderService.getOrdersByProvider(providerId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Orders fetched successfully",
+            data: orders,
+        });
+    } catch {
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch orders",
+        });
+    }
+};
+
 export default {
     createOrder,
     getAllOrders,
@@ -174,4 +199,5 @@ export default {
     updateOrder,
     deleteOrder,
     updateOrderStatus,
+    getOrdersByProvider,
 };

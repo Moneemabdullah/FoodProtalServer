@@ -17,44 +17,6 @@ declare global {
     }
 }
 
-export const authenticated = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
-        const session = await betterAuth.api.getSession({
-            headers: req.headers as Request["headers"],
-        });
-
-        if (!session) {
-            return res.status(401).json({
-                success: false,
-                message: "Unauthorized",
-            });
-        }
-
-        if (!session.user.emailVerified) {
-            return res.status(403).json({
-                success: false,
-                message: "Email not verified",
-            });
-        }
-
-        req.user = {
-            id: session.user.id,
-            email: session.user.email,
-            role: session.user.role as Role,
-            name: session.user.name,
-            emailVerified: session.user.emailVerified,
-        };
-
-        next();
-    } catch (err) {
-        next(err);
-    }
-};
-
 export const auth = (...roles: Role[]) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
@@ -69,6 +31,12 @@ export const auth = (...roles: Role[]) => {
                 });
             }
 
+            if (!session.user.emailVerified) {
+                return res.status(403).json({
+                    success: false,
+                    message: "Email not verified",
+                });
+            }
             // console.log("Session User:", session.user);
 
             const userRole = session.user.role as Role;
@@ -88,7 +56,7 @@ export const auth = (...roles: Role[]) => {
                 emailVerified: session.user.emailVerified,
             };
 
-            // console.log("Authenticated User:", req.user);
+            console.log("Authenticated User:", req.user);
 
             next();
         } catch (err) {

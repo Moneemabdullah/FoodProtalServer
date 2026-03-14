@@ -1,7 +1,7 @@
 import { Router } from "express";
-import providerProfileController from "./ProviderProfile.Controller";
 import { Role } from "../../../generated/prisma/enums";
-import { auth, authenticated } from "../../middlewares/auth";
+import { auth } from "../../middlewares/auth";
+import providerProfileController from "./ProviderProfile.Controller";
 
 const router = Router();
 
@@ -24,7 +24,7 @@ router.delete(
 );
 router.post(
     "/:providerId/rate",
-    authenticated,
+    auth(Role.CUSTOMER),
     providerProfileController.rateProvider,
 );
 

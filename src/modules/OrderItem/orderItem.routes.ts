@@ -1,13 +1,14 @@
 import { Router } from "express";
 import orderItemController from "./orderItem.controller";
-import { authenticated } from "../../middlewares/auth";
+import { auth } from "../../middlewares/auth";
+import { Role } from "../../../generated/prisma/enums";
 
 const router = Router();
 
-router.post("/", authenticated, orderItemController.createOrderItem);
+router.post("/", auth(Role.CUSTOMER), orderItemController.createOrderItem);
 router.get("/", orderItemController.getAllOrderItems);
 router.get("/:id", orderItemController.getOrderItemById);
-router.patch("/:id", authenticated, orderItemController.updateOrderItem);
-router.delete("/:id", authenticated, orderItemController.deleteOrderItem);
+router.patch("/:id", auth(Role.CUSTOMER), orderItemController.updateOrderItem);
+router.delete("/:id", auth(Role.CUSTOMER), orderItemController.deleteOrderItem);
 
 export default router;
