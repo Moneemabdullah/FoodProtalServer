@@ -4,11 +4,12 @@ import nodemailer from "nodemailer";
 import config from "../config";
 
 const transport = nodemailer.createTransport({
-    host: config.AppHost,
-    port: Number(config.AppPort),
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
-        user: config.AppUser,
-        pass: config.AppPassword,
+        user: process.env.APP_USER,
+        pass: process.env.APP_PASSWORD,
     },
 });
 
@@ -16,6 +17,7 @@ export const sendVerificationEmail = async (
     user: any,
     verificationUrl: string,
 ) => {
+    console.log("Sending verification email to:", user.email);
     await transport.sendMail({
         from: '"Food Portal" <no-reply@foodportal.com>',
         to: user.email,

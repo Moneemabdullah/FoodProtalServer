@@ -10,7 +10,7 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
-    "superuser:seed": "tsx src/scripts/seedSuperUser.ts"
+    "admin:seed": "tsx src/scripts/seedSuperUser.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +20,7 @@
     "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "@types/multer": "^2.1.0",
     "@types/node": "^25.4.0",
     "@types/nodemailer": "^7.0.11",
     "@types/pg": "^8.18.0",
@@ -31,10 +32,13 @@
     "@prisma/adapter-pg": "^7.4.2",
     "@prisma/client": "^7.4.2",
     "better-auth": "^1.5.4",
+    "cloudinary": "^1.41.0",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^8.0.2",
     "pg": "^8.20.0"
   }

@@ -56,7 +56,7 @@ export const auth = (...roles: Role[]) => {
                 emailVerified: session.user.emailVerified,
             };
 
-            console.log("Authenticated User:", req.user);
+            // console.log("Authenticated User:", req.user);
 
             next();
         } catch (err) {

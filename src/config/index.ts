@@ -15,6 +15,11 @@ const config = {
     AppPort: process.env.APP_PORT as string,
     AppUser: process.env.APP_USER as string,
     AppPassword: process.env.APP_PASSWORD as string,
+    cloudinary: {
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME || "",
+        apiKey: process.env.CLOUDINARY_API_KEY || "",
+        apiSecret: process.env.CLOUDINARY_API_SECRET || "",
+    },
 };
 
 export default config;
