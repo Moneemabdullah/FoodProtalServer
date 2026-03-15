@@ -1,6 +1,13 @@
 import type { Request, Response } from "express";
 import type { Meal } from "../../../generated/prisma/client";
 import mealService from "./meal.service";
+import {
+    parsePaginationParams,
+    buildPaginationMeta,
+    isValidSortBy,
+} from "../../utils/pagination";
+
+const ALLOWED_SORT_FIELDS = ["price", "createdAt", "title"];
 
 const createMeal = async (req: Request, res: Response) => {
     try {
@@ -20,14 +27,37 @@ const createMeal = async (req: Request, res: Response) => {
     }
 };
 
-const getAllMeals = async (_req: Request, res: Response) => {
+const getAllMeals = async (req: Request, res: Response) => {
     try {
-        const meals = await mealService.getAllMeals();
+        const query = req.query as Record<string, unknown>;
+
+        const paginationParams = parsePaginationParams(query);
+
+        if (
+            paginationParams.sortBy !== "createdAt" &&
+            !isValidSortBy(paginationParams.sortBy, ALLOWED_SORT_FIELDS)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid sortBy value. Allowed values: ${ALLOWED_SORT_FIELDS.join(", ")}`,
+            });
+        }
+
+        const { data, total } = await mealService.getAllMeals({
+            ...paginationParams,
+            sortBy: paginationParams.sortBy as "price" | "createdAt" | "title",
+            search: typeof query.search === "string" ? query.search : undefined,
+            categoryId: typeof query.categoryId === "string" ? query.categoryId : undefined,
+            providerId: typeof query.providerId === "string" ? query.providerId : undefined,
+        });
+
+        const meta = buildPaginationMeta(paginationParams.page, paginationParams.limit, total);
 
         return res.status(200).json({
             success: true,
             message: "Meals fetched successfully",
-            data: meals,
+            meta,
+            data,
         });
     } catch {
         return res.status(500).json({

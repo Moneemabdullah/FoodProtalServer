@@ -1,13 +1,43 @@
 import type { Request, Response } from "express";
 import type { User } from "../../../generated/prisma/client";
 import userService from "./user.service";
+import {
+    parsePaginationParams,
+    buildPaginationMeta,
+    isValidSortBy,
+} from "../../utils/pagination";
 
-const getAllUsers = async (_req: Request, res: Response) => {
+const ALLOWED_SORT_FIELDS = ["createdAt", "name", "email"];
+
+const getAllUsers = async (req: Request, res: Response) => {
     try {
-        const users = await userService.getAllUsers();
+        const query = req.query as Record<string, unknown>;
+
+        const paginationParams = parsePaginationParams(query);
+
+        if (
+            paginationParams.sortBy !== "createdAt" &&
+            !isValidSortBy(paginationParams.sortBy, ALLOWED_SORT_FIELDS)
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid sortBy value. Allowed values: ${ALLOWED_SORT_FIELDS.join(", ")}`,
+            });
+        }
+
+        const { data, total } = await userService.getAllUsers({
+            ...paginationParams,
+            sortBy: paginationParams.sortBy as "createdAt" | "name" | "email",
+            search: typeof query.search === "string" ? query.search : undefined,
+        });
+
+        const meta = buildPaginationMeta(paginationParams.page, paginationParams.limit, total);
+
         return res.status(200).json({
             success: true,
-            data: users,
+            message: "Users fetched successfully",
+            meta,
+            data,
         });
     } catch {
         return res.status(500).json({
