@@ -1,14 +1,15 @@
 import { Router } from "express";
 import reviewController from "./review.controller";
-import { authenticated } from "../../middlewares/auth";
+import { auth } from "../../middlewares/auth";
+import { Role } from "../../../generated/prisma/enums";
 
 const router = Router();
 
-router.post("/", authenticated, reviewController.createReview);
+router.post("/", auth(), reviewController.createReview);
 router.get("/", reviewController.getAllReviews);
 router.get("/:id", reviewController.getReviewById);
-router.patch("/:id", authenticated, reviewController.updateReview);
-router.delete("/:id", authenticated, reviewController.deleteReview);
+router.patch("/:id", auth(Role.CUSTOMER), reviewController.updateReview);
+router.delete("/:id", auth(Role.ADMIN), reviewController.deleteReview);
 router.get("/meal/:mealId", reviewController.getReviewsByMeal);
 
 export default router;
