@@ -49,6 +49,7 @@ const getAllUsers = async (params: UserPaginationParams): Promise<PaginatedUsers
                 phone: true,
                 role: true,
                 emailVerified: true,
+                image: true,
                 createdAt: true,
                 updatedAt: true,
             },
