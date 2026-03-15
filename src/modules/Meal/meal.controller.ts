@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Meal } from "../../../generated/prisma/client";
 import mealService from "./meal.service";
 import {
@@ -9,7 +9,7 @@ import {
 
 const ALLOWED_SORT_FIELDS = ["price", "createdAt", "title"];
 
-const createMeal = async (req: Request, res: Response) => {
+const createMeal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const payload = req.body as Meal;
         const meal = await mealService.createMeal(payload);
@@ -19,15 +19,12 @@ const createMeal = async (req: Request, res: Response) => {
             message: "Meal created successfully",
             data: meal,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create meal",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getAllMeals = async (req: Request, res: Response) => {
+const getAllMeals = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const query = req.query as Record<string, unknown>;
 
@@ -43,9 +40,12 @@ const getAllMeals = async (req: Request, res: Response) => {
             });
         }
 
-        const search = typeof query.search === "string" ? query.search : undefined;
-        const categoryId = typeof query.categoryId === "string" ? query.categoryId : undefined;
-        const providerId = typeof query.providerId === "string" ? query.providerId : undefined;
+        const search =
+            typeof query.search === "string" ? query.search : undefined;
+        const categoryId =
+            typeof query.categoryId === "string" ? query.categoryId : undefined;
+        const providerId =
+            typeof query.providerId === "string" ? query.providerId : undefined;
 
         const serviceParams: Parameters<typeof mealService.getAllMeals>[0] = {
             ...paginationParams,
@@ -58,7 +58,11 @@ const getAllMeals = async (req: Request, res: Response) => {
 
         const { data, total } = await mealService.getAllMeals(serviceParams);
 
-        const meta = buildPaginationMeta(paginationParams.page, paginationParams.limit, total);
+        const meta = buildPaginationMeta(
+            paginationParams.page,
+            paginationParams.limit,
+            total,
+        );
 
         return res.status(200).json({
             success: true,
@@ -66,15 +70,12 @@ const getAllMeals = async (req: Request, res: Response) => {
             meta,
             data,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch meals",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getMealById = async (req: Request, res: Response) => {
+const getMealById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -98,15 +99,12 @@ const getMealById = async (req: Request, res: Response) => {
             message: "Meal fetched successfully",
             data: meal,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch meal",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const updateMeal = async (req: Request, res: Response) => {
+const updateMeal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -124,15 +122,12 @@ const updateMeal = async (req: Request, res: Response) => {
             message: "Meal updated successfully",
             data: meal,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update meal",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteMeal = async (req: Request, res: Response) => {
+const deleteMeal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -148,15 +143,16 @@ const deleteMeal = async (req: Request, res: Response) => {
             success: true,
             message: "Meal deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete meal",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getMealsByProvider = async (req: Request, res: Response) => {
+const getMealsByProvider = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { providerId } = req.params;
         if (!providerId || Array.isArray(providerId)) {
@@ -173,15 +169,16 @@ const getMealsByProvider = async (req: Request, res: Response) => {
             message: "Meals fetched successfully",
             data: meals,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch meals",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getMealsByCategory = async (req: Request, res: Response) => {
+const getMealsByCategory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { categoryId } = req.params;
         if (!categoryId || Array.isArray(categoryId)) {
@@ -198,11 +195,8 @@ const getMealsByCategory = async (req: Request, res: Response) => {
             message: "Meals fetched successfully",
             data: meals,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch meals",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 

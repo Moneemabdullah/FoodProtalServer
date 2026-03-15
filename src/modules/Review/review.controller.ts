@@ -1,8 +1,12 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Review } from "../../../generated/prisma/client";
 import reviewService from "./review.service";
 
-const createReview = async (req: Request, res: Response) => {
+const createReview = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const payload = req.body as Review;
         const review = await reviewService.createReview(payload);
@@ -12,11 +16,8 @@ const createReview = async (req: Request, res: Response) => {
             message: "Review created successfully",
             data: review,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create review",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
@@ -69,7 +70,11 @@ const getReviewById = async (req: Request, res: Response) => {
     }
 };
 
-const updateReview = async (req: Request, res: Response) => {
+const updateReview = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -87,15 +92,16 @@ const updateReview = async (req: Request, res: Response) => {
             message: "Review updated successfully",
             data: review,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update review",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteReview = async (req: Request, res: Response) => {
+const deleteReview = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -111,11 +117,8 @@ const deleteReview = async (req: Request, res: Response) => {
             success: true,
             message: "Review deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete review",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 

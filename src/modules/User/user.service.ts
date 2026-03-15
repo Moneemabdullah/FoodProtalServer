@@ -17,7 +17,9 @@ export interface PaginatedUsers {
 
 const ALLOWED_SORT_FIELDS = ["createdAt", "name", "email"] as const;
 
-const getAllUsers = async (params: UserPaginationParams): Promise<PaginatedUsers> => {
+const getAllUsers = async (
+    params: UserPaginationParams,
+): Promise<PaginatedUsers> => {
     const { skip, limit, sortBy, sortOrder, search } = params;
 
     const where: Record<string, unknown> = {};
@@ -30,7 +32,11 @@ const getAllUsers = async (params: UserPaginationParams): Promise<PaginatedUsers
     }
 
     const orderBy: Record<string, "asc" | "desc"> = {};
-    if (ALLOWED_SORT_FIELDS.includes(sortBy as typeof ALLOWED_SORT_FIELDS[number])) {
+    if (
+        ALLOWED_SORT_FIELDS.includes(
+            sortBy as (typeof ALLOWED_SORT_FIELDS)[number],
+        )
+    ) {
         orderBy[sortBy] = sortOrder;
     } else {
         orderBy.createdAt = "desc";

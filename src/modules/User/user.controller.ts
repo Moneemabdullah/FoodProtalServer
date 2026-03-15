@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { User } from "../../../generated/prisma/client";
 import userService from "./user.service";
 import {
@@ -25,7 +25,8 @@ const getAllUsers = async (req: Request, res: Response) => {
             });
         }
 
-        const search = typeof query.search === "string" ? query.search : undefined;
+        const search =
+            typeof query.search === "string" ? query.search : undefined;
 
         const serviceParams: Parameters<typeof userService.getAllUsers>[0] = {
             ...paginationParams,
@@ -36,7 +37,11 @@ const getAllUsers = async (req: Request, res: Response) => {
 
         const { data, total } = await userService.getAllUsers(serviceParams);
 
-        const meta = buildPaginationMeta(paginationParams.page, paginationParams.limit, total);
+        const meta = buildPaginationMeta(
+            paginationParams.page,
+            paginationParams.limit,
+            total,
+        );
 
         return res.status(200).json({
             success: true,
@@ -83,7 +88,7 @@ const getUserById = async (req: Request, res: Response) => {
     }
 };
 
-const updateUser = async (req: Request, res: Response) => {
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -100,15 +105,12 @@ const updateUser = async (req: Request, res: Response) => {
             success: true,
             data: user,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update user",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteUser = async (req: Request, res: Response) => {
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -124,11 +126,8 @@ const deleteUser = async (req: Request, res: Response) => {
             success: true,
             message: "User deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete user",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 

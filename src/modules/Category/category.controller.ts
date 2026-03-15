@@ -1,8 +1,12 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Category } from "../../../generated/prisma/client";
 import categoryService from "./category.service";
 
-const createCategory = async (req: Request, res: Response) => {
+const createCategory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const payload = req.body as Category;
         const category = await categoryService.createCategory(payload);
@@ -12,15 +16,16 @@ const createCategory = async (req: Request, res: Response) => {
             message: "Category created successfully",
             data: category,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create category",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getAllCategories = async (_req: Request, res: Response) => {
+const getAllCategories = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const categories = await categoryService.getAllCategories();
 
@@ -29,15 +34,16 @@ const getAllCategories = async (_req: Request, res: Response) => {
             message: "Categories fetched successfully",
             data: categories,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch categories",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getCategoryById = async (req: Request, res: Response) => {
+const getCategoryById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -61,15 +67,16 @@ const getCategoryById = async (req: Request, res: Response) => {
             message: "Category fetched successfully",
             data: category,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch category",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const updateCategory = async (req: Request, res: Response) => {
+const updateCategory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -87,15 +94,16 @@ const updateCategory = async (req: Request, res: Response) => {
             message: "Category updated successfully",
             data: category,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update category",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteCategory = async (req: Request, res: Response) => {
+const deleteCategory = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -111,11 +119,8 @@ const deleteCategory = async (req: Request, res: Response) => {
             success: true,
             message: "Category deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete category",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 

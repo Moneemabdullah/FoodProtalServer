@@ -1,8 +1,12 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Location } from "../../../generated/prisma/client";
 import locationService from "./location.service";
 
-const createLocation = async (req: Request, res: Response) => {
+const createLocation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const payload = req.body as Location;
         const location = await locationService.createLocation(payload);
@@ -12,15 +16,16 @@ const createLocation = async (req: Request, res: Response) => {
             message: "Location created successfully",
             data: location,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create location",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getAllLocations = async (_req: Request, res: Response) => {
+const getAllLocations = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const locations = await locationService.getAllLocations();
 
@@ -29,15 +34,16 @@ const getAllLocations = async (_req: Request, res: Response) => {
             message: "Locations fetched successfully",
             data: locations,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch locations",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getLocationById = async (req: Request, res: Response) => {
+const getLocationById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -61,15 +67,16 @@ const getLocationById = async (req: Request, res: Response) => {
             message: "Location fetched successfully",
             data: location,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch location",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const updateLocation = async (req: Request, res: Response) => {
+const updateLocation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -87,15 +94,16 @@ const updateLocation = async (req: Request, res: Response) => {
             message: "Location updated successfully",
             data: location,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update location",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteLocation = async (req: Request, res: Response) => {
+const deleteLocation = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -111,11 +119,8 @@ const deleteLocation = async (req: Request, res: Response) => {
             success: true,
             message: "Location deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete location",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 

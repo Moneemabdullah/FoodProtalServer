@@ -13,6 +13,7 @@ import locationRoutes from "./modules/Location/location.routes";
 import orderRoutes from "./modules/Order/order.routes";
 import orderItemRoutes from "./modules/OrderItem/orderItem.routes";
 import reviewRoutes from "./modules/Review/review.routes";
+import errorHandler from "./middlewares/globalErrorHandler";
 
 const app = express();
 
@@ -49,5 +50,6 @@ app.get("/", (_req, res) => {
 });
 
 app.use(notFound);
+app.use(errorHandler);
 
 export default app;

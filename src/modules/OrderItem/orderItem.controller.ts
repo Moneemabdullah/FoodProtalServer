@@ -1,8 +1,12 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { OrderItem } from "../../../generated/prisma/client";
 import orderItemService from "./orderItem.service";
 
-const createOrderItem = async (req: Request, res: Response) => {
+const createOrderItem = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const payload = req.body as OrderItem;
         const orderItem = await orderItemService.createOrderItem(payload);
@@ -12,15 +16,16 @@ const createOrderItem = async (req: Request, res: Response) => {
             message: "Order item created successfully",
             data: orderItem,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create order item",
-        });
+    } catch (err) {
+        next(err);
     }
 };
 
-const getAllOrderItems = async (_req: Request, res: Response) => {
+const getAllOrderItems = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const orderItems = await orderItemService.getAllOrderItems();
 
@@ -29,15 +34,16 @@ const getAllOrderItems = async (_req: Request, res: Response) => {
             message: "Order items fetched successfully",
             data: orderItems,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch order items",
-        });
+    } catch (err) {
+        next(err);
     }
 };
 
-const getOrderItemById = async (req: Request, res: Response) => {
+const getOrderItemById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -61,15 +67,16 @@ const getOrderItemById = async (req: Request, res: Response) => {
             message: "Order item fetched successfully",
             data: orderItem,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch order item",
-        });
+    } catch (err) {
+        next(err);
     }
 };
 
-const updateOrderItem = async (req: Request, res: Response) => {
+const updateOrderItem = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -87,15 +94,16 @@ const updateOrderItem = async (req: Request, res: Response) => {
             message: "Order item updated successfully",
             data: orderItem,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update order item",
-        });
+    } catch (err) {
+        next(err);
     }
 };
 
-const deleteOrderItem = async (req: Request, res: Response) => {
+const deleteOrderItem = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -111,11 +119,8 @@ const deleteOrderItem = async (req: Request, res: Response) => {
             success: true,
             message: "Order item deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete order item",
-        });
+    } catch (err) {
+        next(err);
     }
 };
 

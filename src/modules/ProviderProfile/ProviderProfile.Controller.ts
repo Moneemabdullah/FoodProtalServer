@@ -1,8 +1,12 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { ProviderProfile } from "../../../generated/prisma/client";
 import providerProfileService from "./ProviderProfile.Service";
 
-const createProviderProfile = async (req: Request, res: Response) => {
+const createProviderProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const payload = req.body as ProviderProfile;
         const providerProfile =
@@ -12,15 +16,16 @@ const createProviderProfile = async (req: Request, res: Response) => {
             success: true,
             data: providerProfile,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create provider profile",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getAllProviderProfiles = async (_req: Request, res: Response) => {
+const getAllProviderProfiles = async (
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const providerProfiles =
             await providerProfileService.getAllProviderProfiles();
@@ -29,15 +34,16 @@ const getAllProviderProfiles = async (_req: Request, res: Response) => {
             success: true,
             data: providerProfiles,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch provider profiles",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getProviderProfileById = async (req: Request, res: Response) => {
+const getProviderProfileById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -61,15 +67,16 @@ const getProviderProfileById = async (req: Request, res: Response) => {
             success: true,
             data: providerProfile,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch provider profile",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const updateProviderProfile = async (req: Request, res: Response) => {
+const updateProviderProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -88,15 +95,16 @@ const updateProviderProfile = async (req: Request, res: Response) => {
             success: true,
             data: providerProfile,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update provider profile",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteProviderProfile = async (req: Request, res: Response) => {
+const deleteProviderProfile = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -112,15 +120,16 @@ const deleteProviderProfile = async (req: Request, res: Response) => {
             success: true,
             message: "Provider profile deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete provider profile",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const rateProvider = async (req: Request, res: Response) => {
+const rateProvider = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { providerId } = req.params;
         if (!providerId || Array.isArray(providerId)) {

@@ -1,8 +1,8 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import type { Order, OrderStatus } from "../../../generated/prisma/client";
 import orderService from "./order.service";
 
-const createOrder = async (req: Request, res: Response) => {
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const payload = req.body as {
             userId: string;
@@ -20,15 +20,16 @@ const createOrder = async (req: Request, res: Response) => {
             message: "Order created successfully",
             data: order,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to create order",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getAllOrders = async (req: Request, res: Response) => {
+const getAllOrders = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const userId = req.query.userId as string | undefined;
         const status = req.query.status as OrderStatus | undefined;
@@ -44,15 +45,16 @@ const getAllOrders = async (req: Request, res: Response) => {
             message: "Orders fetched successfully",
             data: orders,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch orders",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getOrderById = async (req: Request, res: Response) => {
+const getOrderById = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -76,15 +78,12 @@ const getOrderById = async (req: Request, res: Response) => {
             message: "Order fetched successfully",
             data: order,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch order",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const updateOrder = async (req: Request, res: Response) => {
+const updateOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -102,15 +101,12 @@ const updateOrder = async (req: Request, res: Response) => {
             message: "Order updated successfully",
             data: order,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update order",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const deleteOrder = async (req: Request, res: Response) => {
+const deleteOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -126,15 +122,16 @@ const deleteOrder = async (req: Request, res: Response) => {
             success: true,
             message: "Order deleted successfully",
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to delete order",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const updateOrderStatus = async (req: Request, res: Response) => {
+const updateOrderStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { id } = req.params;
         if (!id || Array.isArray(id)) {
@@ -159,15 +156,16 @@ const updateOrderStatus = async (req: Request, res: Response) => {
             message: "Order status updated successfully",
             data: order,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to update order status",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
-const getOrdersByProvider = async (req: Request, res: Response) => {
+const getOrdersByProvider = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const { providerId } = req.params;
         if (!providerId || Array.isArray(providerId)) {
@@ -184,11 +182,8 @@ const getOrdersByProvider = async (req: Request, res: Response) => {
             message: "Orders fetched successfully",
             data: orders,
         });
-    } catch {
-        return res.status(500).json({
-            success: false,
-            message: "Failed to fetch orders",
-        });
+    } catch (error) {
+        next(error);
     }
 };
 
