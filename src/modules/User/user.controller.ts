@@ -25,11 +25,16 @@ const getAllUsers = async (req: Request, res: Response) => {
             });
         }
 
-        const { data, total } = await userService.getAllUsers({
+        const search = typeof query.search === "string" ? query.search : undefined;
+
+        const serviceParams: Parameters<typeof userService.getAllUsers>[0] = {
             ...paginationParams,
             sortBy: paginationParams.sortBy as "createdAt" | "name" | "email",
-            search: typeof query.search === "string" ? query.search : undefined,
-        });
+        };
+
+        if (search) serviceParams.search = search;
+
+        const { data, total } = await userService.getAllUsers(serviceParams);
 
         const meta = buildPaginationMeta(paginationParams.page, paginationParams.limit, total);
 

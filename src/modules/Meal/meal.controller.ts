@@ -43,13 +43,20 @@ const getAllMeals = async (req: Request, res: Response) => {
             });
         }
 
-        const { data, total } = await mealService.getAllMeals({
+        const search = typeof query.search === "string" ? query.search : undefined;
+        const categoryId = typeof query.categoryId === "string" ? query.categoryId : undefined;
+        const providerId = typeof query.providerId === "string" ? query.providerId : undefined;
+
+        const serviceParams: Parameters<typeof mealService.getAllMeals>[0] = {
             ...paginationParams,
             sortBy: paginationParams.sortBy as "price" | "createdAt" | "title",
-            search: typeof query.search === "string" ? query.search : undefined,
-            categoryId: typeof query.categoryId === "string" ? query.categoryId : undefined,
-            providerId: typeof query.providerId === "string" ? query.providerId : undefined,
-        });
+        };
+
+        if (search) serviceParams.search = search;
+        if (categoryId) serviceParams.categoryId = categoryId;
+        if (providerId) serviceParams.providerId = providerId;
+
+        const { data, total } = await mealService.getAllMeals(serviceParams);
 
         const meta = buildPaginationMeta(paginationParams.page, paginationParams.limit, total);
 
