@@ -12,6 +12,11 @@ const ALLOWED_SORT_FIELDS = ["price", "createdAt", "title"];
 const createMeal = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const payload = req.body as Meal;
+        
+        if (req.file) {
+            payload.image = req.file.path;
+        }
+        
         const meal = await mealService.createMeal(payload);
 
         return res.status(201).json({
@@ -115,6 +120,11 @@ const updateMeal = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         const payload = req.body as Partial<Meal>;
+        
+        if (req.file) {
+            payload.image = req.file.path;
+        }
+        
         const meal = await mealService.updateMeal(id, payload);
 
         return res.status(200).json({

@@ -1,5 +1,5 @@
 import { Meal } from "../../../generated/prisma/client";
-import prisma from "../../lib/prisma";
+import { prisma } from "../../lib/prisma";
 
 export interface MealPaginationParams {
     page: number;
@@ -26,8 +26,11 @@ const createMeal = async (data: Meal) => {
     return meal;
 };
 
-const getAllMeals = async (params: MealPaginationParams): Promise<PaginatedMeals> => {
-    const { skip, limit, sortBy, sortOrder, search, categoryId, providerId } = params;
+const getAllMeals = async (
+    params: MealPaginationParams,
+): Promise<PaginatedMeals> => {
+    const { skip, limit, sortBy, sortOrder, search, categoryId, providerId } =
+        params;
 
     const where: Record<string, unknown> = {};
 
@@ -47,7 +50,11 @@ const getAllMeals = async (params: MealPaginationParams): Promise<PaginatedMeals
     }
 
     const orderBy: Record<string, "asc" | "desc"> = {};
-    if (ALLOWED_SORT_FIELDS.includes(sortBy as typeof ALLOWED_SORT_FIELDS[number])) {
+    if (
+        ALLOWED_SORT_FIELDS.includes(
+            sortBy as (typeof ALLOWED_SORT_FIELDS)[number],
+        )
+    ) {
         orderBy[sortBy] = sortOrder;
     } else {
         orderBy.createdAt = "desc";

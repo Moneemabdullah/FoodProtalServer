@@ -1,5 +1,5 @@
 import { OrderItem } from "../../../generated/prisma/client";
-import prisma from "../../lib/prisma";
+import { prisma } from "../../lib/prisma";
 
 const createOrderItem = async (data: OrderItem) => {
     const orderItem = await prisma.orderItem.create({
@@ -29,7 +29,10 @@ const getOrderItemById = async (id: OrderItem["id"]) => {
     return orderItem;
 };
 
-const updateOrderItem = async (id: OrderItem["id"], data: Partial<OrderItem>) => {
+const updateOrderItem = async (
+    id: OrderItem["id"],
+    data: Partial<OrderItem>,
+) => {
     const orderItem = await prisma.orderItem.update({
         where: { id },
         data,

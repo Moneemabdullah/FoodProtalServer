@@ -1,5 +1,5 @@
 import { User } from "../../../generated/prisma/client";
-import prisma from "../../config/db";
+import { prisma } from "../../config/db";
 
 export interface UserPaginationParams {
     page: number;
@@ -73,6 +73,12 @@ const getUserById = async (id: User["id"]) => {
             id: true,
             email: true,
             name: true,
+            image: true,
+            phone: true,
+            role: true,
+            emailVerified: true,
+            createdAt: true,
+            updatedAt: true,
         },
     });
     return user;
@@ -89,6 +95,9 @@ const updateUser = async (id: User["id"], data: Partial<User>) => {
             phone: true,
             role: true,
             emailVerified: true,
+            image: true,
+            createdAt: true,
+            updatedAt: true,
         },
     });
     return user;

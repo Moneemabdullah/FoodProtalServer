@@ -2,35 +2,19 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import config from "../config/index";
 import { sendVerificationEmail } from "../utils/email.utils";
-import prisma from "./prisma";
+import { prisma } from "./prisma";
 
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql",
     }),
 
-    trustedOrigins: [config.OriginUrl!],
+    trustedOrigins: [
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:3002",
+    ],
 
-    databaseHooks: {
-        user: {
-            create: {
-                before: async (user) => {
-                    const email = user.email.toLowerCase();
-
-                    const existingUser = await prisma.user.findUnique({
-                        where: { email },
-                    });
-
-                    if (existingUser) {
-                        throw new Error("Email already exists");
-                    }
-
-                    user.email = email;
-                    return user;
-                },
-            },
-        },
-    },
     user: {
         additionalFields: {
             role: {
@@ -47,7 +31,7 @@ export const auth = betterAuth({
 
     emailAndPassword: {
         enabled: true,
-        autoSignIn: false,
+        autoSignIn: true,
         requireEmailVerification: false,
     },
 

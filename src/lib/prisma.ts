@@ -5,9 +5,7 @@ import { PrismaClient } from "../../generated/prisma/client";
 
 const connectionString = config.dbUrl;
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
-
+const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
-export default prisma;
+export { prisma };

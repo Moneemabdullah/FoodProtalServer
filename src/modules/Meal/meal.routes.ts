@@ -14,7 +14,7 @@ router.post(
 );
 router.get("/", mealController.getAllMeals);
 router.get("/:id", mealController.getMealById);
-router.patch("/:id", auth(Role.PROVIDER), mealController.updateMeal);
+router.patch("/:id", auth(Role.PROVIDER), uploadMiddleware.single("image"), mealController.updateMeal);
 router.delete("/:id", auth(Role.PROVIDER), mealController.deleteMeal);
 router.get("/provider/:providerId", mealController.getMealsByProvider);
 router.get("/category/:categoryId", mealController.getMealsByCategory);

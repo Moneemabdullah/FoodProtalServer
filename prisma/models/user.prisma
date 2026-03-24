@@ -1,7 +1,7 @@
 model User {
   id            String   @id @default(uuid())
   name          String
-  email         String   @unique
+  email         String
   emailVerified Boolean
   role          Role     @default(CUSTOMER)
   image         String?
@@ -15,12 +15,15 @@ model User {
   orders                 Order[]
   reviews                Review[]
   providerProfileRatings providerProfileRating[]
+
+  @@unique([email])
+  @@map("users")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String   @unique
+  token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -28,6 +31,10 @@ model Session {
   userId    String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -43,4 +50,6 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
 }

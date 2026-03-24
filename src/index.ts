@@ -1,10 +1,12 @@
 import { toNodeHandler } from "better-auth/node";
 import compression from "compression";
 import cors from "cors";
-import express from "express";
+import express, { Application } from "express";
 import config from "./config/index";
+
 import { auth } from "./lib/auth";
 import { notFound } from "./middlewares/notFound";
+
 import providerProfileRoutes from "./modules/ProviderProfile/ProviderProfile.Routes";
 import userRoutes from "./modules/User/user.routes";
 import mealRoutes from "./modules/Meal/meal.routes";
@@ -15,7 +17,7 @@ import orderItemRoutes from "./modules/OrderItem/orderItem.routes";
 import reviewRoutes from "./modules/Review/review.routes";
 import errorHandler from "./middlewares/globalErrorHandler";
 
-const app = express();
+const app: Application = express();
 
 // Middleware
 app.use(express.json());
@@ -29,12 +31,19 @@ app.use(compression());
 
 app.use(
     cors({
-        origin: config.OriginUrl,
+        origin: [
+            "http://localhost:3000",
+            "http://localhost:3001",
+            "http://localhost:3002",
+        ],
         credentials: true,
     }),
 );
 
+// Auth Routes
 app.all("/api/auth/*splat", toNodeHandler(auth));
+
+// All Routes
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/provider-profiles", providerProfileRoutes);
 app.use("/api/v1/meals", mealRoutes);

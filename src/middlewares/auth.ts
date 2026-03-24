@@ -31,15 +31,7 @@ export const auth = (...roles: Role[]) => {
                 });
             }
 
-            if (!session.user.emailVerified) {
-                return res.status(403).json({
-                    success: false,
-                    message: "Email not verified",
-                });
-            }
-            // console.log("Session User:", session.user);
-
-            const userRole = session.user.role as Role;
+            const userRole = (session.user.role as Role) || "CUSTOMER";
 
             if (roles.length && !roles.includes(userRole)) {
                 return res.status(403).json({
