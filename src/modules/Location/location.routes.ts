@@ -1,7 +1,7 @@
 import { Router } from "express";
-import locationController from "./location.controller";
+import locationController from "./location.controller.js";
 import { Role } from "@prisma/client";
-import { auth } from "../../middlewares/auth";
+import { auth } from "../../middlewares/auth.js";
 
 const router = Router();
 

@@ -1,11 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import type { Meal } from "@prisma/client";
-import mealService from "./meal.service";
+import mealService from "./meal.service.js";
 import {
     parsePaginationParams,
     buildPaginationMeta,
     isValidSortBy,
-} from "../../utils/pagination";
+} from "../../utils/pagination.js";
 
 const ALLOWED_SORT_FIELDS = ["price", "createdAt", "title"];
 

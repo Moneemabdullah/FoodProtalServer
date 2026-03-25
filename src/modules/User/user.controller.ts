@@ -1,11 +1,11 @@
 import type { NextFunction, Request, Response } from "express";
 import type { User } from "@prisma/client";
-import userService from "./user.service";
+import userService from "./user.service.js";
 import {
     parsePaginationParams,
     buildPaginationMeta,
     isValidSortBy,
-} from "../../utils/pagination";
+} from "../../utils/pagination.js";
 
 const ALLOWED_SORT_FIELDS = ["createdAt", "name", "email"];
 

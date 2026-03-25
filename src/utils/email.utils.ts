@@ -1,7 +1,7 @@
 // Looking to send emails in production? Check out our Email API/SMTP product!
 
 import nodemailer from "nodemailer";
-import config from "../config";
+import config from "../config/index.js";
 
 const transport = nodemailer.createTransport({
     host: "smtp.gmail.com",

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { Role } from "@prisma/client";
-import { auth } from "../../middlewares/auth";
-import { uploadMiddleware } from "../../middlewares/upload.middleware";
-import userController from "./user.controller";
+import { auth } from "../../middlewares/auth.js";
+import { uploadMiddleware } from "../../middlewares/upload.middleware.js";
+import userController from "./user.controller.js";
 
 const router = Router();
 

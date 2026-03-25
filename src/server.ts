@@ -1,7 +1,7 @@
 import http, { Server } from "node:http";
-import config from "./config/index";
+import config from "./config/index.js";
 import app from "./index.js";
-import { prisma } from "./lib/prisma";
+import { prisma } from "./lib/prisma.js";
 let server: Server | null = null;
 
 async function connectToDB() {

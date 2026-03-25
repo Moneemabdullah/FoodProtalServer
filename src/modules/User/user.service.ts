@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { prisma } from "../../config/db";
+import { prisma } from "../../config/db.js";
 
 export interface UserPaginationParams {
     page: number;

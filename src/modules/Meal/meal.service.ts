@@ -1,5 +1,5 @@
 import type { Meal } from "@prisma/client";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
 export interface MealPaginationParams {
     page: number;

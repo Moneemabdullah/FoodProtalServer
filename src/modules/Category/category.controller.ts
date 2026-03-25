@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { Category } from "@prisma/client";
-import categoryService from "./category.service";
+import categoryService from "./category.service.js";
 
 const createCategory = async (
     req: Request,

@@ -1,5 +1,5 @@
 import type { Location } from "@prisma/client";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
 const createLocation = async (data: Location) => {
     const location = await prisma.location.create({

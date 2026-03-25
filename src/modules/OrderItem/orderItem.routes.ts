@@ -1,6 +1,6 @@
 import { Router } from "express";
-import orderItemController from "./orderItem.controller";
-import { auth } from "../../middlewares/auth";
+import orderItemController from "./orderItem.controller.js";
+import { auth } from "../../middlewares/auth.js";
 import { Role } from "@prisma/client";
 
 const router = Router();

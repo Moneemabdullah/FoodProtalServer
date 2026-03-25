@@ -1,6 +1,6 @@
 import type { Order } from "@prisma/client";
 import { OrderStatus } from "@prisma/client";
-import { prisma } from "../../lib/prisma";
+import { prisma } from "../../lib/prisma.js";
 
 interface CreateOrderInput {
     userId: string;

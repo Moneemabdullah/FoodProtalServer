@@ -1,7 +1,7 @@
 import readline from "node:readline";
 import { Role } from "@prisma/client";
-import config from "../config";
-import { prisma } from "../lib/prisma";
+import config from "../config/index.js";
+import { prisma } from "../lib/prisma.js";
 
 const rl = readline.createInterface({
     input: process.stdin,

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import type { Review } from "@prisma/client";
-import reviewService from "./review.service";
+import reviewService from "./review.service.js";
 
 const createReview = async (
     req: Request,

@@ -1,7 +1,7 @@
 import type { UploadApiOptions } from "cloudinary";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import config from "./index";
+import config from "./index.js";
 
 cloudinary.config({
     cloud_name: config.cloudinary.cloudName,
