@@ -39,31 +39,26 @@ app.use(
     }),
 );
 
-// Auth Routes
-import type { Request as ExpressRequest, Response } from "express";
-
-app.all("/api/auth/*", async (req: ExpressRequest, res: Response) => {
+app.all("/api/auth/*", async (req, res) => {
     try {
         const url = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
 
-        // Convert headers properly
         const headers = new Headers();
         Object.entries(req.headers).forEach(([key, value]) => {
             if (value) headers.set(key, String(value));
         });
 
-        const init: RequestInit = {
+        const request = new Request(url, {
             method: req.method,
             headers,
-        };
+            body:
+                req.method !== "GET" && req.method !== "HEAD"
+                    ? JSON.stringify(req.body)
+                    : undefined,
+        });
 
-        if (req.method !== "GET" && req.method !== "HEAD") {
-            init.body = JSON.stringify(req.body);
-        }
-
-        const request = new Request(url, init);
-
-        const response = await auth.handler(request);
+        // 🔥 IMPORTANT CHANGE
+        const response = await auth.api(request);
 
         res.status(response.status);
 
@@ -75,7 +70,7 @@ app.all("/api/auth/*", async (req: ExpressRequest, res: Response) => {
         res.send(text);
     } catch (error) {
         console.error("Auth error:", error);
-        res.status(500).json({ message: "Auth handler failed" });
+        res.status(500).json({ message: "Auth failed" });
     }
 });
 
