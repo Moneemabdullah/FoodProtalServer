@@ -41,7 +41,7 @@ app.use(
 );
 
 // Auth Routes
-app.all("/api/auth/*splat", toNodeHandler(auth));
+app.all("/api/auth", toNodeHandler(auth));
 
 // All Routes
 app.use("/api/v1/users", userRoutes);
