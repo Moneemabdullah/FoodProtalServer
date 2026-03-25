@@ -1,10 +1,9 @@
-import { toNodeHandler } from "better-auth/node";
+import { auth } from "./lib/auth";
 import compression from "compression";
 import cors from "cors";
 import express, { Application } from "express";
 import config from "./config/index";
 
-import { auth } from "./lib/auth";
 import { notFound } from "./middlewares/notFound";
 
 import providerProfileRoutes from "./modules/ProviderProfile/ProviderProfile.Routes";
@@ -41,7 +40,44 @@ app.use(
 );
 
 // Auth Routes
-app.all("/api/auth", toNodeHandler(auth));
+import type { Request as ExpressRequest, Response } from "express";
+
+app.all("/api/auth/*", async (req: ExpressRequest, res: Response) => {
+    try {
+        const url = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+
+        // Convert headers properly
+        const headers = new Headers();
+        Object.entries(req.headers).forEach(([key, value]) => {
+            if (value) headers.set(key, String(value));
+        });
+
+        const init: RequestInit = {
+            method: req.method,
+            headers,
+        };
+
+        if (req.method !== "GET" && req.method !== "HEAD") {
+            init.body = JSON.stringify(req.body);
+        }
+
+        const request = new Request(url, init);
+
+        const response = await auth.handler(request);
+
+        res.status(response.status);
+
+        response.headers.forEach((value, key) => {
+            res.setHeader(key, value);
+        });
+
+        const text = await response.text();
+        res.send(text);
+    } catch (error) {
+        console.error("Auth error:", error);
+        res.status(500).json({ message: "Auth handler failed" });
+    }
+});
 
 // All Routes
 app.use("/api/v1/users", userRoutes);
