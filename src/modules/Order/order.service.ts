@@ -1,4 +1,5 @@
-import { Order, OrderStatus } from "../../../generated/prisma/client";
+import type { Order } from "@prisma/client";
+import { OrderStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 interface CreateOrderInput {

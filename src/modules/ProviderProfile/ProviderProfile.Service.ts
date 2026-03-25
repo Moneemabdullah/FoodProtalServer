@@ -1,4 +1,4 @@
-import { ProviderProfile, User } from "../../../generated/prisma/client";
+import type { ProviderProfile, User } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 const createProviderProfile = async (data: ProviderProfile) => {

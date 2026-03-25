@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { Review } from "../../../generated/prisma/client";
+import type { Review } from "@prisma/client";
 import reviewService from "./review.service";
 
 const createReview = async (

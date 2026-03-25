@@ -1,5 +1,5 @@
 import readline from "node:readline";
-import { Role } from "../../generated/prisma/enums";
+import { Role } from "@prisma/client";
 import config from "../config";
 import { prisma } from "../lib/prisma";
 

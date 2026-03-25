@@ -1,6 +1,6 @@
 import { Router } from "express";
 import locationController from "./location.controller";
-import { Role } from "../../../generated/prisma/enums";
+import { Role } from "@prisma/client";
 import { auth } from "../../middlewares/auth";
 
 const router = Router();

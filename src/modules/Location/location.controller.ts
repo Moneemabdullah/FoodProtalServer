@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { Location } from "../../../generated/prisma/client";
+import type { Location } from "@prisma/client";
 import locationService from "./location.service";
 
 const createLocation = async (

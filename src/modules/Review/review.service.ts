@@ -1,4 +1,4 @@
-import { Review } from "../../../generated/prisma/client";
+import type { Review } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 const createReview = async (data: Review) => {

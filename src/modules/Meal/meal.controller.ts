@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { Meal } from "../../../generated/prisma/client";
+import type { Meal } from "@prisma/client";
 import mealService from "./meal.service";
 import {
     parsePaginationParams,

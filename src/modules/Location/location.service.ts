@@ -1,4 +1,4 @@
-import { Location } from "../../../generated/prisma/client";
+import type { Location } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 const createLocation = async (data: Location) => {

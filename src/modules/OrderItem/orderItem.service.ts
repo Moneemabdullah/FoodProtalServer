@@ -1,4 +1,4 @@
-import { OrderItem } from "../../../generated/prisma/client";
+import type { OrderItem } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 const createOrderItem = async (data: OrderItem) => {

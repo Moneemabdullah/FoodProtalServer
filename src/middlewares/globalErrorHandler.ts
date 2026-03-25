@@ -1,5 +1,5 @@
+import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
-import { Prisma } from "../../generated/prisma/client";
 
 function errorHandler(
     err: unknown,
@@ -9,7 +9,7 @@ function errorHandler(
 ) {
     let statusCode = 500;
     let errorMessage = "Internal Server Error";
-    let errorDetails: any = null;
+    let errorDetails: unknown = null;
 
     // Prisma validation error
     if (err instanceof Prisma.PrismaClientValidationError) {

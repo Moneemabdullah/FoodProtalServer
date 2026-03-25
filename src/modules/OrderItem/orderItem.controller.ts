@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { OrderItem } from "../../../generated/prisma/client";
+import type { OrderItem } from "@prisma/client";
 import orderItemService from "./orderItem.service";
 
 const createOrderItem = async (

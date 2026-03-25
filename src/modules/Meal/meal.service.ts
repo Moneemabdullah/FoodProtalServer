@@ -1,4 +1,4 @@
-import { Meal } from "../../../generated/prisma/client";
+import type { Meal } from "@prisma/client";
 import { prisma } from "../../lib/prisma";
 
 export interface MealPaginationParams {

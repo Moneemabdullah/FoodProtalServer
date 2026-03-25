@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import type { ProviderProfile } from "../../../generated/prisma/client";
+import type { ProviderProfile } from "@prisma/client";
 import providerProfileService from "./ProviderProfile.Service";
 
 const createProviderProfile = async (
