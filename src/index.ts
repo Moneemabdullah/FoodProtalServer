@@ -17,17 +17,21 @@ import userRoutes from "./modules/User/user.routes.js";
 const app: Application = express();
 const authHandler = toNodeHandler(auth);
 
-app.use(express.json());
-app.use(compression());
-
 app.use(
     cors({
-        origin: ["https://food-portal-client.vercel.app/"],
+        origin: "https://food-portal-client.vercel.app",
         credentials: true,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
     }),
 );
 
-// Express 5 requires named wildcards, and Better Auth already exposes a Node handler.
+app.options("*", cors());
+
+app.use(express.json());
+app.use(compression());
+
+// AUTH ROUTE
 app.all("/api/auth/{*authPath}", async (req, res) => {
     await authHandler(req, res);
 });
