@@ -10,3 +10,5 @@ coverage/
 *.suo
 
 /generated/prisma
+
+.vercel
