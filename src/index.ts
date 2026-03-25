@@ -17,24 +17,34 @@ import userRoutes from "./modules/User/user.routes.js";
 const app: Application = express();
 const authHandler = toNodeHandler(auth);
 
-app.use(
-    cors({
-        origin: "https://food-portal-client.vercel.app",
-        credentials: true,
-        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allowedHeaders: ["Content-Type", "Authorization"],
-    }),
-);
+// ✅ CORS FIX (manual - safest)
+app.use((req, res, next) => {
+    res.header(
+        "Access-Control-Allow-Origin",
+        "https://food-portal-client.vercel.app",
+    );
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    );
+    res.header(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+    );
 
-app.options("*", cors());
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(200);
+    }
+
+    next();
+});
 
 app.use(express.json());
 app.use(compression());
 
-// AUTH ROUTE
-app.all("/api/auth/{*authPath}", async (req, res) => {
-    await authHandler(req, res);
-});
+// ✅ FIXED AUTH ROUTE (Express 5 compatible)
+app.use("/api/auth", authHandler);
 
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/provider-profiles", providerProfileRoutes);
