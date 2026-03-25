@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { Role } from "../../../generated/prisma/enums";
 import { auth } from "../../middlewares/auth";
+import { uploadMiddleware } from "../../middlewares/upload.middleware";
 import providerProfileController from "./ProviderProfile.Controller";
 
 const router = Router();
@@ -15,6 +16,7 @@ router.get("/:id", providerProfileController.getProviderProfileById);
 router.patch(
     "/:id",
     auth(Role.PROVIDER),
+    uploadMiddleware.single("image"),
     providerProfileController.updateProviderProfile,
 );
 router.delete(

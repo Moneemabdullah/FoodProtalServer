@@ -88,6 +88,10 @@ const updateProviderProfile = async (
 
         const payload = req.body as Partial<ProviderProfile>;
 
+        if (req.file) {
+            payload.image = (req.file as any).secure_url || req.file.path;
+        }
+
         const providerProfile =
             await providerProfileService.updateProviderProfile(id, payload);
 

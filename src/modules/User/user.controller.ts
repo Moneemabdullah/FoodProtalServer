@@ -100,6 +100,10 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
         const payload = req.body as Partial<User>;
 
+        if (req.file) {
+            payload.image = (req.file as any).secure_url || req.file.path;
+        }
+
         const user = await userService.updateUser(id, payload);
         return res.status(200).json({
             success: true,

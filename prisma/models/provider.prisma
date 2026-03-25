@@ -3,6 +3,7 @@ model ProviderProfile {
   ownerId        String
   restaurantName String
   description    String?
+  image          String?
   ratings        providerProfileRating[]
   createdAt      DateTime                @default(now())
   updatedAt      DateTime                @updatedAt

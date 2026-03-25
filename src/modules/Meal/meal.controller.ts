@@ -14,7 +14,7 @@ const createMeal = async (req: Request, res: Response, next: NextFunction) => {
         const payload = req.body as Meal;
         
         if (req.file) {
-            payload.image = req.file.path;
+            payload.image = (req.file as any).secure_url || req.file.path;
         }
         
         const meal = await mealService.createMeal(payload);
@@ -122,7 +122,7 @@ const updateMeal = async (req: Request, res: Response, next: NextFunction) => {
         const payload = req.body as Partial<Meal>;
         
         if (req.file) {
-            payload.image = req.file.path;
+            payload.image = (req.file as any).secure_url || req.file.path;
         }
         
         const meal = await mealService.updateMeal(id, payload);
