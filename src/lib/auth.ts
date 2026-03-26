@@ -9,11 +9,18 @@ export const auth = betterAuth({
         provider: "postgresql",
     }),
 
-    trustedOrigins: [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-    ],
+    baseURL: config.BaseUrl,
+    trustedOrigins: config.allowedOrigins,
+    advanced: {
+        useSecureCookies: config.isSecureAuth,
+        trustedProxyHeaders: config.isProduction,
+        defaultCookieAttributes: {
+            httpOnly: true,
+            sameSite: config.isSecureAuth ? "none" : "lax",
+            secure: config.isSecureAuth,
+            path: "/",
+        },
+    },
 
     user: {
         additionalFields: {

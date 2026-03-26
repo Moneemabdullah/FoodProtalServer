@@ -49,7 +49,6 @@ async function seedSuperUser() {
                 method: "POST",
                 headers: {
                     "content-type": "application/json",
-                    Origin: config.OriginUrl,
                 },
                 body: JSON.stringify(SuperUserData),
             },

@@ -1,7 +1,8 @@
 import { toNodeHandler } from "better-auth/node";
 import compression from "compression";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import express, { Application } from "express";
+import config from "./config/index.js";
 import { auth } from "./lib/auth.js";
 import errorHandler from "./middlewares/globalErrorHandler.js";
 import { notFound } from "./middlewares/notFound.js";
@@ -17,33 +18,30 @@ import userRoutes from "./modules/User/user.routes.js";
 const app: Application = express();
 const authHandler = toNodeHandler(auth);
 
-// ✅ CORS FIX (manual - safest)
-app.use((req, res, next) => {
-    res.header(
-        "Access-Control-Allow-Origin",
-        "https://food-portal-client.vercel.app",
-    );
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-    );
-    res.header(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PUT, PATCH, DELETE, OPTIONS",
-    );
+const corsOptions: CorsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || config.allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
 
-    if (req.method === "OPTIONS") {
-        return res.sendStatus(200);
-    }
+        return callback(new Error(`CORS blocked for origin: ${origin}`));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+        "Origin",
+        "X-Requested-With",
+        "Content-Type",
+        "Accept",
+        "Authorization",
+    ],
+    optionsSuccessStatus: 204,
+};
 
-    next();
-});
-
+app.use(cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 app.use(express.json());
 app.use(compression());
-
-// ✅ FIXED AUTH ROUTE (Express 5 compatible)
 app.use("/api/auth", authHandler);
 
 app.use("/api/v1/users", userRoutes);
