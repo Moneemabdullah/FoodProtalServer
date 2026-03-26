@@ -1,7 +1,14 @@
 import type { Review } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 
-const createReview = async (data: Review) => {
+interface CreateReviewInput {
+    userId: string;
+    mealId: string;
+    rating: number;
+    comment?: string | null;
+}
+
+const createReview = async (data: CreateReviewInput) => {
     const review = await prisma.review.create({
         data,
     });

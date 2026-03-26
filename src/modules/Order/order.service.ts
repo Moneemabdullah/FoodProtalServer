@@ -1,6 +1,7 @@
 import type { Order } from "@prisma/client";
 import { OrderStatus } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import mealService from "../Meal/meal.service.js";
 
 interface CreateOrderInput {
     userId: string;
@@ -61,12 +62,17 @@ const getAllOrders = async (params?: GetAllOrdersParams) => {
 };
 
 const getOrdersByProvider = async (providerId: string) => {
+    const resolvedProviderId = await mealService.resolveProviderProfileId(providerId);
+    if (!resolvedProviderId) {
+        return [];
+    }
+
     const orders = await prisma.order.findMany({
         where: {
             orderItems: {
                 some: {
                     meal: {
-                        providerId,
+                        providerId: resolvedProviderId,
                     },
                 },
             },

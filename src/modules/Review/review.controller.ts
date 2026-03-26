@@ -8,8 +8,42 @@ const createReview = async (
     next: NextFunction,
 ) => {
     try {
-        const payload = req.body as Review;
-        const review = await reviewService.createReview(payload);
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        const payload = req.body as {
+            mealId?: string;
+            rating?: number;
+            comment?: string;
+        };
+
+        if (!payload.mealId || typeof payload.mealId !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "mealId is required",
+            });
+        }
+
+        if (typeof payload.rating !== "number" || payload.rating < 1 || payload.rating > 5) {
+            return res.status(400).json({
+                success: false,
+                message: "rating must be a number between 1 and 5",
+            });
+        }
+
+        const review = await reviewService.createReview({
+            userId: req.user.id,
+            mealId: payload.mealId,
+            rating: payload.rating,
+            comment:
+                typeof payload.comment === "string" && payload.comment.trim()
+                    ? payload.comment.trim()
+                    : null,
+        });
 
         return res.status(201).json({
             success: true,

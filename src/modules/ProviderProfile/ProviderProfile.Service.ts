@@ -1,7 +1,15 @@
 import type { ProviderProfile, User } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
 
-const createProviderProfile = async (data: ProviderProfile) => {
+interface CreateProviderProfileInput {
+    ownerId: string;
+    restaurantName: string;
+    description?: string | null;
+    image?: string | null;
+    locationId?: string | null;
+}
+
+const createProviderProfile = async (data: CreateProviderProfileInput) => {
     const providerProfile = await prisma.providerProfile.create({
         data,
     });
@@ -36,6 +44,13 @@ const deleteProviderProfile = async (id: ProviderProfile["id"]) => {
 const getAllProviderProfiles = async () => {
     const providerProfiles = await prisma.providerProfile.findMany();
     return providerProfiles;
+};
+
+const getProviderProfileByOwnerId = async (ownerId: ProviderProfile["ownerId"]) => {
+    const providerProfile = await prisma.providerProfile.findFirst({
+        where: { ownerId },
+    });
+    return providerProfile;
 };
 
 const rateProvider = async (
@@ -85,6 +100,7 @@ const rateProvider = async (
 export default {
     createProviderProfile,
     getProviderProfileById,
+    getProviderProfileByOwnerId,
     updateProviderProfile,
     deleteProviderProfile,
     getAllProviderProfiles,

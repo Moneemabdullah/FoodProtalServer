@@ -1,5 +1,6 @@
-import type { Meal } from "@prisma/client";
+import type { Meal, Prisma } from "@prisma/client";
 import { prisma } from "../../lib/prisma.js";
+import providerProfileService from "../ProviderProfile/ProviderProfile.Service.js";
 
 export interface MealPaginationParams {
     page: number;
@@ -19,7 +20,24 @@ export interface PaginatedMeals {
 
 const ALLOWED_SORT_FIELDS = ["price", "createdAt", "title"] as const;
 
-const createMeal = async (data: Meal) => {
+interface CreateMealInput {
+    title: string;
+    description?: string | null;
+    price: number | string | Prisma.Decimal;
+    image?: string | null;
+    categoryId: string;
+    providerId: string;
+}
+
+const resolveProviderProfileId = async (providerIdOrOwnerId: string) => {
+    const providerProfile =
+        (await providerProfileService.getProviderProfileById(providerIdOrOwnerId)) ??
+        (await providerProfileService.getProviderProfileByOwnerId(providerIdOrOwnerId));
+
+    return providerProfile?.id;
+};
+
+const createMeal = async (data: CreateMealInput) => {
     const meal = await prisma.meal.create({
         data,
     });
@@ -88,7 +106,7 @@ const getMealById = async (id: Meal["id"]) => {
     return meal;
 };
 
-const updateMeal = async (id: Meal["id"], data: Partial<Meal>) => {
+const updateMeal = async (id: Meal["id"], data: Prisma.MealUpdateInput) => {
     const meal = await prisma.meal.update({
         where: { id },
         data,
@@ -104,8 +122,13 @@ const deleteMeal = async (id: Meal["id"]) => {
 };
 
 const getMealsByProvider = async (providerId: Meal["providerId"]) => {
+    const resolvedProviderId = await resolveProviderProfileId(providerId);
+    if (!resolvedProviderId) {
+        return [];
+    }
+
     const meals = await prisma.meal.findMany({
-        where: { providerId },
+        where: { providerId: resolvedProviderId },
         include: {
             category: true,
         },
@@ -131,4 +154,5 @@ export default {
     deleteMeal,
     getMealsByProvider,
     getMealsByCategory,
+    resolveProviderProfileId,
 };

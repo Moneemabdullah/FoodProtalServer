@@ -5,8 +5,14 @@ import orderService from "./order.service.js";
 
 const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
         const payload = req.body as {
-            userId: string;
             totalAmount: number;
             items: Array<{
                 mealId: string;
@@ -14,7 +20,10 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
                 price: number;
             }>;
         };
-        const order = await orderService.createOrder(payload);
+        const order = await orderService.createOrder({
+            ...payload,
+            userId: req.user.id,
+        });
 
         return res.status(201).json({
             success: true,

@@ -2,15 +2,60 @@ import type { NextFunction, Request, Response } from "express";
 import type { ProviderProfile } from "@prisma/client";
 import providerProfileService from "./ProviderProfile.Service.js";
 
+const normalizeOptionalString = (
+    value: unknown,
+): string | null | undefined => {
+    if (typeof value !== "string") {
+        return undefined;
+    }
+
+    const trimmed = value.trim();
+    return trimmed === "" ? null : trimmed;
+};
+
 const createProviderProfile = async (
     req: Request,
     res: Response,
     next: NextFunction,
 ) => {
     try {
-        const payload = req.body as ProviderProfile;
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        const existingProfile =
+            await providerProfileService.getProviderProfileByOwnerId(req.user.id);
+
+        if (existingProfile) {
+            return res.status(400).json({
+                success: false,
+                message: "Provider profile already exists for this user",
+            });
+        }
+
+        const payload = req.body as Partial<ProviderProfile>;
+        if (!payload.restaurantName || typeof payload.restaurantName !== "string") {
+            return res.status(400).json({
+                success: false,
+                message: "restaurantName is required",
+            });
+        }
+
+        const description = normalizeOptionalString(payload.description);
+        const image = normalizeOptionalString(payload.image);
+        const locationId = normalizeOptionalString(payload.locationId);
+
         const providerProfile =
-            await providerProfileService.createProviderProfile(payload);
+            await providerProfileService.createProviderProfile({
+                ownerId: req.user.id,
+                restaurantName: payload.restaurantName.trim(),
+                ...(description !== undefined ? { description } : {}),
+                ...(image !== undefined ? { image } : {}),
+                ...(locationId !== undefined ? { locationId } : {}),
+            });
 
         return res.status(201).json({
             success: true,
@@ -143,16 +188,16 @@ const rateProvider = async (
             });
         }
 
-        const { userId, rating } = req.body as {
-            userId: string;
-            rating: number;
-        };
-        if (!userId || typeof userId !== "string") {
-            return res.status(400).json({
+        if (!req.user) {
+            return res.status(401).json({
                 success: false,
-                message: "userId is required",
+                message: "Unauthorized",
             });
         }
+
+        const { rating } = req.body as {
+            rating: number;
+        };
 
         if (typeof rating !== "number") {
             return res.status(400).json({
@@ -163,7 +208,7 @@ const rateProvider = async (
 
         const ratingSummary = await providerProfileService.rateProvider(
             providerId,
-            userId,
+            req.user.id,
             Number(rating),
         );
 

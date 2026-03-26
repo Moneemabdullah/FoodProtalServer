@@ -1,5 +1,4 @@
 import type { NextFunction, Request, Response } from "express";
-import type { Meal } from "@prisma/client";
 import mealService from "./meal.service.js";
 import {
     parsePaginationParams,
@@ -9,15 +8,73 @@ import {
 
 const ALLOWED_SORT_FIELDS = ["price", "createdAt", "title"];
 
+const normalizeOptionalString = (
+    value: unknown,
+): string | null | undefined => {
+    if (typeof value !== "string") {
+        return undefined;
+    }
+
+    const trimmed = value.trim();
+    return trimmed === "" ? null : trimmed;
+};
+
 const createMeal = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const payload = req.body as Meal;
-        
-        if (req.file) {
-            payload.image = (req.file as any).secure_url || req.file.path;
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
         }
-        
-        const meal = await mealService.createMeal(payload);
+
+        const payload = req.body as Record<string, unknown>;
+        const providerId = await mealService.resolveProviderProfileId(req.user.id);
+
+        if (!providerId) {
+            return res.status(400).json({
+                success: false,
+                message: "Provider profile not found for this user",
+            });
+        }
+
+        if (
+            typeof payload.title !== "string" ||
+            !payload.title.trim() ||
+            typeof payload.categoryId !== "string" ||
+            !payload.categoryId.trim()
+        ) {
+            return res.status(400).json({
+                success: false,
+                message: "title and categoryId are required",
+            });
+        }
+
+        const price = Number(payload.price);
+        if (!Number.isFinite(price) || price <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "price must be a positive number",
+            });
+        }
+
+        const description = normalizeOptionalString(payload.description);
+        const image = normalizeOptionalString(payload.image);
+
+        const mealPayload = {
+            title: payload.title.trim(),
+            price,
+            categoryId: payload.categoryId.trim(),
+            providerId,
+            ...(description !== undefined ? { description } : {}),
+            ...(image !== undefined ? { image } : {}),
+        };
+
+        if (req.file) {
+            mealPayload.image = (req.file as any).secure_url || req.file.path;
+        }
+
+        const meal = await mealService.createMeal(mealPayload);
 
         return res.status(201).json({
             success: true,
@@ -119,13 +176,54 @@ const updateMeal = async (req: Request, res: Response, next: NextFunction) => {
             });
         }
 
-        const payload = req.body as Partial<Meal>;
-        
-        if (req.file) {
-            payload.image = (req.file as any).secure_url || req.file.path;
+        const payload = req.body as Record<string, unknown>;
+        const mealPayload: Record<string, unknown> = {};
+
+        if (typeof payload.title === "string") {
+            const title = payload.title.trim();
+            if (!title) {
+                return res.status(400).json({
+                    success: false,
+                    message: "title cannot be empty",
+                });
+            }
+            mealPayload.title = title;
         }
-        
-        const meal = await mealService.updateMeal(id, payload);
+
+        if (payload.description !== undefined) {
+            mealPayload.description = normalizeOptionalString(payload.description);
+        }
+
+        if (payload.image !== undefined) {
+            mealPayload.image = normalizeOptionalString(payload.image);
+        }
+
+        if (payload.categoryId !== undefined) {
+            if (typeof payload.categoryId !== "string" || !payload.categoryId.trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: "categoryId cannot be empty",
+                });
+            }
+            mealPayload.categoryId = payload.categoryId.trim();
+        }
+
+        if (payload.price !== undefined) {
+            const price = Number(payload.price);
+            if (!Number.isFinite(price) || price <= 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: "price must be a positive number",
+                });
+            }
+            mealPayload.price = price;
+        }
+
+        if (req.file) {
+            mealPayload.image = (req.file as any).secure_url || req.file.path;
+        }
+
+        const meal = await mealService.updateMeal(id, mealPayload);
 
         return res.status(200).json({
             success: true,
