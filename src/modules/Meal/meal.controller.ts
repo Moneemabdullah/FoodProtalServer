@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import mealService from "./meal.service.js";
+import providerProfileService from "../ProviderProfile/ProviderProfile.Service.js";
 import {
     parsePaginationParams,
     buildPaginationMeta,
@@ -29,14 +30,14 @@ const createMeal = async (req: Request, res: Response, next: NextFunction) => {
         }
 
         const payload = req.body as Record<string, unknown>;
-        const providerId = await mealService.resolveProviderProfileId(req.user.id);
-
-        if (!providerId) {
-            return res.status(400).json({
-                success: false,
-                message: "Provider profile not found for this user",
-            });
-        }
+        const fallbackRestaurantName = req.user.name?.trim()
+            ? `${req.user.name.trim()}'s Kitchen`
+            : "My Restaurant";
+        const providerProfile =
+            await providerProfileService.getOrCreateProviderProfileByOwnerId(
+                req.user.id,
+                fallbackRestaurantName,
+            );
 
         if (
             typeof payload.title !== "string" ||
@@ -65,7 +66,7 @@ const createMeal = async (req: Request, res: Response, next: NextFunction) => {
             title: payload.title.trim(),
             price,
             categoryId: payload.categoryId.trim(),
-            providerId,
+            providerId: providerProfile.id,
             ...(description !== undefined ? { description } : {}),
             ...(image !== undefined ? { image } : {}),
         };

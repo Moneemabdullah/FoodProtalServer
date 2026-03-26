@@ -53,6 +53,26 @@ const getProviderProfileByOwnerId = async (ownerId: ProviderProfile["ownerId"]) 
     return providerProfile;
 };
 
+const getOrCreateProviderProfileByOwnerId = async (
+    ownerId: ProviderProfile["ownerId"],
+    restaurantName: string,
+) => {
+    const existingProfile = await getProviderProfileByOwnerId(ownerId);
+
+    if (existingProfile) {
+        return existingProfile;
+    }
+
+    const providerProfile = await prisma.providerProfile.create({
+        data: {
+            ownerId,
+            restaurantName,
+        },
+    });
+
+    return providerProfile;
+};
+
 const rateProvider = async (
     providerId: ProviderProfile["id"],
     userId: User["id"],
@@ -101,6 +121,7 @@ export default {
     createProviderProfile,
     getProviderProfileById,
     getProviderProfileByOwnerId,
+    getOrCreateProviderProfileByOwnerId,
     updateProviderProfile,
     deleteProviderProfile,
     getAllProviderProfiles,
